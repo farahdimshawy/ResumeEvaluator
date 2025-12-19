@@ -288,9 +288,7 @@ def gem_json(text):
     }
     
     return extracted_data
-
-
-GOOGLE_API_KEY = "AIzaSyCpexAChBxDbQnt836sahjELIsE4TWId3w"
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
