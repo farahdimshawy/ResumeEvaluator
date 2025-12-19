@@ -98,3 +98,8 @@ zstandard==0.23.0
 tavily-python==0.7.13
 serpapi==0.1.5
 Wikipedia-API==0.8.1
+streamlit>=1.32.0
+google-generativeai>=0.4.1
+protobuf>=4.25.1
+PyMuPDF>=1.23.8
+proto-plus>=1.23.0
