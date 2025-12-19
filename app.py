@@ -42,253 +42,323 @@ def to_native(obj):
         return obj
 
 
-def gem_json_job(job_text):
-    """
-    Extracts structured information from a Job Description using Gemini function calling.
+# def gem_json_job(job_text):
+#     """
+#     Extracts structured information from a Job Description using Gemini function calling.
     
-    Args:
-        job_text (str): The full text of the job description.
-        model: The Gemini model instance (e.g., genai.GenerativeModel).
+#     Args:
+#         job_text (str): The full text of the job description.
+#         model: The Gemini model instance (e.g., genai.GenerativeModel).
     
-    Returns:
-        dict: Extracted structured job details (title, company, requirements, etc.)
-    """
+#     Returns:
+#         dict: Extracted structured job details (title, company, requirements, etc.)
+#     """
 
-    # Use your existing job extraction tool
-    extract_job_details_func = FunctionDeclaration(
-    name="extract_job_details",
-    description="Extracts key details from a job description text.",
-    parameters={
-        "type": "object",
-        "properties": {
-            "Job_Title": {
-                "type": "string",
-                "description": "The official title of the job position."
-            },
-            "Company": {
-                "type": "string",
-                "description": "The company or organization offering the job."
-            },
-            "Location": {
-                "type": "string",
-                "description": "The city and/or country where the position is based."
-            },
-            "Responsibilities": {
-                "type": "array",
-                "items": {"type": "string"},
-                "description": "Key duties and responsibilities expected from the candidate."
-            },
-            "Requirements": {
-                "type": "array",
-                "items": {"type": "string"},
-                "description": "Essential technical and non-technical skills required for the job."
-            },
-            "Preferred_Qualifications": {
-                "type": "array",
-                "items": {"type": "string"},
-                "description": "Additional or desired qualifications that give candidates an advantage."
-            },
-            "Duration": {
-                "type": "string",
-                "description": "The duration or contract type of the position (e.g., full-time, 3-month internship)."
-            },
-            "Start_Date": {
-                "type": "string",
-                "description": "The expected or mentioned start date of the position (if available)."
-            },
-            "Salary_or_Benefits": {
-                "type": "string",
-                "description": "Information about compensation or benefits, if specified."
-            },
-            "Application_Deadline": {
-                "type": "string",
-                "description": "The application deadline or closing date, if provided."
-            },
-            "Keywords": {
-                "type": "array",
-                "items": {"type": "string"},
-                "description": "Important keywords that describe the role (skills, tools, topics)."
-            },
-            "Employment_Type": {
-                "type": "string",
-                "description": "The nature of employment (e.g., Internship, Full-time, Part-time, Contract)."
-            },
-        },
-        "required": ["Job_Title", "Company", "Responsibilities", "Requirements"]
-    }
-)
+#     # Use your existing job extraction tool
+#     extract_job_details_func = FunctionDeclaration(
+#     name="extract_job_details",
+#     description="Extracts key details from a job description text.",
+#     parameters={
+#         "type": "object",
+#         "properties": {
+#             "Job_Title": {
+#                 "type": "string",
+#                 "description": "The official title of the job position."
+#             },
+#             "Company": {
+#                 "type": "string",
+#                 "description": "The company or organization offering the job."
+#             },
+#             "Location": {
+#                 "type": "string",
+#                 "description": "The city and/or country where the position is based."
+#             },
+#             "Responsibilities": {
+#                 "type": "array",
+#                 "items": {"type": "string"},
+#                 "description": "Key duties and responsibilities expected from the candidate."
+#             },
+#             "Requirements": {
+#                 "type": "array",
+#                 "items": {"type": "string"},
+#                 "description": "Essential technical and non-technical skills required for the job."
+#             },
+#             "Preferred_Qualifications": {
+#                 "type": "array",
+#                 "items": {"type": "string"},
+#                 "description": "Additional or desired qualifications that give candidates an advantage."
+#             },
+#             "Duration": {
+#                 "type": "string",
+#                 "description": "The duration or contract type of the position (e.g., full-time, 3-month internship)."
+#             },
+#             "Start_Date": {
+#                 "type": "string",
+#                 "description": "The expected or mentioned start date of the position (if available)."
+#             },
+#             "Salary_or_Benefits": {
+#                 "type": "string",
+#                 "description": "Information about compensation or benefits, if specified."
+#             },
+#             "Application_Deadline": {
+#                 "type": "string",
+#                 "description": "The application deadline or closing date, if provided."
+#             },
+#             "Keywords": {
+#                 "type": "array",
+#                 "items": {"type": "string"},
+#                 "description": "Important keywords that describe the role (skills, tools, topics)."
+#             },
+#             "Employment_Type": {
+#                 "type": "string",
+#                 "description": "The nature of employment (e.g., Internship, Full-time, Part-time, Contract)."
+#             },
+#         },
+#         "required": ["Job_Title", "Company", "Responsibilities", "Requirements"]
+#     }
+# )
 
-    review_tool = Tool(function_declarations=[extract_job_details_func])
+#     review_tool = Tool(function_declarations=[extract_job_details_func])
 
-    # Create the prompt for Gemini
-    extraction_prompt = f"""
-    Please analyze the following Job Description and extract all relevant details such as:
-    - Job Title
-    - Company
-    - Location
-    - Responsibilities
-    - Requirements
-    - Preferred Qualifications
-    - Duration (if internship)
-    ---
-    {job_text}
-    ---
-    """
+#     # Create the prompt for Gemini
+#     extraction_prompt = f"""
+#     Please analyze the following Job Description and extract all relevant details such as:
+#     - Job Title
+#     - Company
+#     - Location
+#     - Responsibilities
+#     - Requirements
+#     - Preferred Qualifications
+#     - Duration (if internship)
+#     ---
+#     {job_text}
+#     ---
+#     """
 
-    # Call Gemini API
-    response = model.generate_content(
-        extraction_prompt,
-        tools=[review_tool],
-        tool_config={"function_calling_config": "ANY"}
-    )
-    function_call_part = response.candidates[0].content.parts[0]
-    function_call = function_call_part.function_call
+#     # Call Gemini API
+#     response = model.generate_content(
+#         extraction_prompt,
+#         tools=[review_tool],
+#         tool_config={"function_calling_config": "ANY"}
+#     )
+#     function_call_part = response.candidates[0].content.parts[0]
+#     function_call = function_call_part.function_call
 
-    # Convert the MapComposite into a normal Python dict
-    function_args = dict(function_call.args)
-    native_data = to_native(function_args)
+#     # Convert the MapComposite into a normal Python dict
+#     function_args = dict(function_call.args)
+#     native_data = to_native(function_args)
 
 
-    # Safely access values
-    extracted_data = {
-        'Job_Title': native_data.get('Job_Title'),
-        'Company': native_data.get('Company'),
-        'Location': native_data.get('Location'),
-        'Responsibilities': native_data.get('Responsibilities'),
-        'Requirements': native_data.get('Requirements'),
-        'Preferred_Qualifications': native_data.get('Preferred_Qualifications'),
-        'Duration': native_data.get('Duration'),
-    }
+#     # Safely access values
+#     extracted_data = {
+#         'Job_Title': native_data.get('Job_Title'),
+#         'Company': native_data.get('Company'),
+#         'Location': native_data.get('Location'),
+#         'Responsibilities': native_data.get('Responsibilities'),
+#         'Requirements': native_data.get('Requirements'),
+#         'Preferred_Qualifications': native_data.get('Preferred_Qualifications'),
+#         'Duration': native_data.get('Duration'),
+#     }
 
-    # Convert to native Python types (if using protobuf types)
+#     # Convert to native Python types (if using protobuf types)
 
-    return extracted_data
-def gem_json(text):
-# Create the prompt for the model
-    extraction_prompt = f"""
-    Please analyze the following CV and extract the required information.
-    Here is the CV:
-    ---
-    {text}
-    ---
-    """
+#     return extracted_data
+# def gem_json(text):
+# # Create the prompt for the model
+#     extraction_prompt = f"""
+#     Please analyze the following CV and extract the required information.
+#     Here is the CV:
+#     ---
+#     {text}
+#     ---
+#     """
 
-    # Make the API call, providing the tool and forcing the tool to be used
-    extract_cv_details_func = FunctionDeclaration(
-    name="extract_cv_details",
-    description="Extracts key details from a CV text.",
-    # This is now a dictionary, not a Schema object.
-    parameters = {
-    "type": "object",
-    "properties": {
-        "Name": {
-            "type": "string",
-            "description": "The applicant's full name"
-        },
-        "Contact_Info": {
-            "type": "object",
-            "properties": {
-                "Email": {"type": "string"},
-                "Phone": {"type": "string"},
-                "LinkedIn": {"type": "string"},
-                "Portfolio": {"type": "string"}
-            }
-        },
-        "Education": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "Degree": {"type": "string"},
-                    "Major": {"type": "string"},
-                    "Institution": {"type": "string"},
-                    "Graduation_Year": {"type": "string"},
-                    "GPA": {"type": "string"}
-                }
-            }
-        },
-        "Experience": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "Title": {"type": "string"},
-                    "Company": {"type": "string"},
-                    "Duration": {"type": "string"},
-                    "Responsibilities": {"type": "string"},
-                    "Technologies": {"type": "array", "items": {"type": "string"}}
-                }
-            }
-        },
-        "Projects": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "Title": {"type": "string"},
-                    "Description": {"type": "string"},
-                    "Technologies": {"type": "array", "items": {"type": "string"}}
-                }
-            }
-        },
-        "Skills": {
-            "type": "array",
-            "items": {"type": "string"},
-            "description": "Technical and soft skills (e.g., Python, Machine Learning, Communication)"
-        },
-        "Certifications": {
-            "type": "array",
-            "items": {"type": "string"}
-        },
-        "Languages": {
-            "type": "array",
-            "items": {"type": "string"}
-        },
-        "Career_Objective": {
-            "type": "string",
-            "description": "Short statement about the applicant's professional goals"
-        },
-        "Soft_Skills": {
-            "type": "array",
-            "items": {"type": "string"},
-            "description": "Non-technical skills such as leadership, teamwork, or communication"
-        },
-        "Location": {
-            "type": "string",
-            "description": "Applicant's current city or country"
-        },
-        "Availability": {
-            "type": "string",
-            "description": "Whether the applicant is available full-time, part-time, or for internships"
-        }
-    },
-    "required": ["Name", "Education", "Skills"]
-}
+#     # Make the API call, providing the tool and forcing the tool to be used
+#     extract_cv_details_func = FunctionDeclaration(
+#     name="extract_cv_details",
+#     description="Extracts key details from a CV text.",
+#     # This is now a dictionary, not a Schema object.
+#     parameters = {
+#     "type": "object",
+#     "properties": {
+#         "Name": {
+#             "type": "string",
+#             "description": "The applicant's full name"
+#         },
+#         "Contact_Info": {
+#             "type": "object",
+#             "properties": {
+#                 "Email": {"type": "string"},
+#                 "Phone": {"type": "string"},
+#                 "LinkedIn": {"type": "string"},
+#                 "Portfolio": {"type": "string"}
+#             }
+#         },
+#         "Education": {
+#             "type": "array",
+#             "items": {
+#                 "type": "object",
+#                 "properties": {
+#                     "Degree": {"type": "string"},
+#                     "Major": {"type": "string"},
+#                     "Institution": {"type": "string"},
+#                     "Graduation_Year": {"type": "string"},
+#                     "GPA": {"type": "string"}
+#                 }
+#             }
+#         },
+#         "Experience": {
+#             "type": "array",
+#             "items": {
+#                 "type": "object",
+#                 "properties": {
+#                     "Title": {"type": "string"},
+#                     "Company": {"type": "string"},
+#                     "Duration": {"type": "string"},
+#                     "Responsibilities": {"type": "string"},
+#                     "Technologies": {"type": "array", "items": {"type": "string"}}
+#                 }
+#             }
+#         },
+#         "Projects": {
+#             "type": "array",
+#             "items": {
+#                 "type": "object",
+#                 "properties": {
+#                     "Title": {"type": "string"},
+#                     "Description": {"type": "string"},
+#                     "Technologies": {"type": "array", "items": {"type": "string"}}
+#                 }
+#             }
+#         },
+#         "Skills": {
+#             "type": "array",
+#             "items": {"type": "string"},
+#             "description": "Technical and soft skills (e.g., Python, Machine Learning, Communication)"
+#         },
+#         "Certifications": {
+#             "type": "array",
+#             "items": {"type": "string"}
+#         },
+#         "Languages": {
+#             "type": "array",
+#             "items": {"type": "string"}
+#         },
+#         "Career_Objective": {
+#             "type": "string",
+#             "description": "Short statement about the applicant's professional goals"
+#         },
+#         "Soft_Skills": {
+#             "type": "array",
+#             "items": {"type": "string"},
+#             "description": "Non-technical skills such as leadership, teamwork, or communication"
+#         },
+#         "Location": {
+#             "type": "string",
+#             "description": "Applicant's current city or country"
+#         },
+#         "Availability": {
+#             "type": "string",
+#             "description": "Whether the applicant is available full-time, part-time, or for internships"
+#         }
+#     },
+#     "required": ["Name", "Education", "Skills"]
+# }
 
-)
-    review_tool = Tool(function_declarations=[extract_cv_details_func])
+# )
+#     review_tool = Tool(function_declarations=[extract_cv_details_func])
 
-    response = model.generate_content(
-        extraction_prompt,
-        tools=[review_tool],
-        # By setting tool_config, we force the model to call our function
-        tool_config={'function_calling_config': 'ANY'}
-    )
-    function_call_part = response.candidates[0].content.parts[0]
-    function_call = function_call_part.function_call
+#     response = model.generate_content(
+#         extraction_prompt,
+#         tools=[review_tool],
+#         # By setting tool_config, we force the model to call our function
+#         tool_config={'function_calling_config': 'ANY'}
+#     )
+#     function_call_part = response.candidates[0].content.parts[0]
+#     function_call = function_call_part.function_call
 
-    # Convert the MapComposite into a normal Python dict
-    function_args = dict(function_call.args)
-    native_data = to_native(function_args)
-    # Now you can safely access values
-    extracted_data = {
-        'Name': native_data.get('Name'),
-        'Education': native_data.get('Education'),
-        'Skills': native_data.get('Skills'),
-    }
+#     # Convert the MapComposite into a normal Python dict
+#     function_args = dict(function_call.args)
+#     native_data = to_native(function_args)
+#     # Now you can safely access values
+#     extracted_data = {
+#         'Name': native_data.get('Name'),
+#         'Education': native_data.get('Education'),
+#         'Skills': native_data.get('Skills'),
+#     }
     
-    return extracted_data
-GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+#     return extracted_data
+
+import json
+from google.api_core import retry
+
+def gem_json(text: str) -> dict:
+    prompt = f"""
+Extract structured information from the following text.
+
+Return ONLY valid JSON (no markdown, no commentary) with this structure:
+
+{{
+  "skills": [],
+  "experience": [],
+  "education": [],
+  "certifications": [],
+  "projects": [],
+  "summary": ""
+}}
+
+TEXT:
+{text}
+"""
+
+    try:
+        response = model.generate_content(
+            prompt,
+            request_options={
+                "timeout": 120,
+                "retry": retry.Retry(
+                    initial=1.0,
+                    maximum=10.0,
+                    multiplier=2.0,
+                    deadline=120.0
+                )
+            }
+        )
+
+        return json.loads(response.text)
+
+    except Exception as e:
+        return {"error": str(e)}
+def gem_json_job(job_text: str) -> dict:
+    prompt = f"""
+Extract structured job information.
+
+Return ONLY valid JSON with:
+{{
+  "title": "",
+  "company": "",
+  "location": "",
+  "required_skills": [],
+  "preferred_skills": [],
+  "responsibilities": [],
+  "experience_level": ""
+}}
+
+JOB DESCRIPTION:
+{job_text}
+"""
+
+    try:
+        response = model.generate_content(
+            prompt,
+            request_options={"timeout": 120}
+        )
+        return json.loads(response.text)
+
+    except Exception as e:
+        return {"error": str(e)}
+
+GOOGLE_API_KEY = "AIzaSyCpexAChBxDbQnt836sahjELIsE4TWId3w"
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
@@ -358,22 +428,54 @@ def gem_evaluate(cv_file_stream: IO[Any], jd_input: Any):
     des_json_str = json.dumps(des_data, indent=2)
     
     prompt = f"""
-    You are an expert hiring manager. Evaluate how well the following CV matches the job description.
-    
+    You are an expert hiring manager and technical recruiter.
+
+    Your task is to evaluate how well the candidate’s CV matches the job description.
+
+    IMPORTANT:
+    - Perform a detailed, step-by-step analysis internally.
+    - Use a clear mathematical scoring principle.
+    - Do NOT reveal your reasoning steps.
+    - Only return the final structured JSON output.
+
+    ### Evaluation Method (apply internally):
+    1. Extract required skills, preferred skills, tools, and experience from the job description.
+    2. Extract skills, tools, and experience from the candidate CV.
+    3. Assign scores using the following weighted formula (total = 100):
+
+    - Core skill match (40 points)
+        • Exact match: full points
+        • Partial/related skill: partial points
+    - Experience relevance (30 points)
+        • Same domain & seniority: full points
+        • Adjacent domain or lower seniority: partial points
+    - Tools & technologies match (20 points)
+    - Bonus alignment (10 points)
+        • Certifications, projects, leadership, or domain-specific strengths
+
+    4. Penalize for critical missing requirements.
+    5. Normalize the final score to a value between 0 and 100.
+
+    ### Inputs:
+
     Job Description (JSON):
     {des_json_str}
-    
+
     Candidate CV (JSON):
     {cv_json_str}
-    
-    Please output a JSON with keys:
-      - match_score (0-100)
-      - present_skills (list)
-      - missing_skills (list)
-      - experience_diff (text)
-      - suggestions (list)
+
+    ### Output Requirements:
+    Return ONLY valid JSON with the following keys:
+
+    - match_score: integer between 0 and 100
+    - present_skills: list of skills found in both CV and job description
+    - missing_skills: list of required skills not found in the CV
+    - experience_diff: short explanation comparing required vs actual experience
+    - suggestions: list of concrete recommendations to improve match
+
+    Do not include explanations, analysis steps, or extra text outside the JSON.
     """
-    
+
     st.write("Step 3/3: Evaluating match...")
     resp = model.generate_content(prompt)
     
